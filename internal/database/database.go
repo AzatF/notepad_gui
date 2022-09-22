@@ -6,6 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"notepad/config"
 	"notepad/pkg/logging"
+	"os"
 	"path"
 	"strings"
 )
@@ -24,6 +25,11 @@ type TableStr struct {
 }
 
 func NewDataBase(cfg *config.Config, logger *logging.Logger) (DB, error) {
+
+	err := os.MkdirAll(cfg.DataPath, 0777)
+	if err != nil {
+		logger.Error(err)
+	}
 
 	sqlite, err := sql.Open("sqlite3", path.Join(cfg.DataPath, "notes.db"))
 	_, _ = sqlite.Exec(fmt.Sprintf("CREATE TABLE IF NOT EXISTS note (id INTEGER NOT NULL PRIMARY KEY, title VARCHAR (30), text TEXT DEFAULT ('undefined'))"))
